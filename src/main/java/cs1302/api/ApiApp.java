@@ -105,8 +105,7 @@ public class ApiApp extends Application {
             "(CN) China", "(FR) France", "(DE) Germany", "(IT) Italy", "(ID) Indonesia",
             "(IE) Ireland", "(JP) Japan", "(MX) Mexico", "(NO) Norway", "(NL) Netherlands",
             "(NZ) New Zealand", "(KR) South Korea", "(ES) Spain", "(GB) United Kingdom",
-            "(US) United States"
-            );
+            "(US) United States");
 
         next.getChildren().addAll(nextHoliday);
 
@@ -152,6 +151,12 @@ public class ApiApp extends Application {
         errorMessage.showAndWait();
     }
 
+    /**
+     *Gets the next holiday's date, local name
+     *as well as their English name.
+     *
+     *@return The date of the holiday
+     */
     public String  getHoliday() {
         String nextHolidayDate = "";
         String nextHolidayNameLocal = "";
@@ -185,38 +190,42 @@ public class ApiApp extends Application {
         return nextHolidayDate;
     }
 
+    /**
+     *Sets the days that are remaing until the next holiday.
+     */
     public void  daysRemaining() {
-         try {
-             String holidayDate = getHoliday();
-             String date = URLEncoder.encode(holidayDate, StandardCharsets.UTF_8);
-             String digiDateURL = "https://digidates.de/api/v1/countdown/" + date;
-             HttpRequest inp = HttpRequest.newBuilder().uri(URI.create(digiDateURL)).build();
-             HttpResponse<String> inps = HTTP_CLIENT.send(inp, BodyHandlers.ofString());
-
-             DigiDate inpResults = GSON.fromJson(inps.body(), DigiDate.class);
-             this.days.setText("Days Left: " + inpResults.daysonly);
-         } catch (IOException e) {
-             Platform.runLater(() -> err(countryHolidays, e.toString()));
-         } catch (InterruptedException e) {
-             Platform.runLater(() -> err(countryHolidays, e.toString()));
-         }
+        try {
+            String holidayDate = getHoliday();
+            String date = URLEncoder.encode(holidayDate, StandardCharsets.UTF_8);
+            String digiDateURL = "https://digidates.de/api/v1/countdown/" + date;
+            HttpRequest inp = HttpRequest.newBuilder().uri(URI.create(digiDateURL)).build();
+            HttpResponse<String> inps = HTTP_CLIENT.send(inp, BodyHandlers.ofString());
+            DigiDate inpResults = GSON.fromJson(inps.body(), DigiDate.class);
+            this.days.setText("Days Left: " + inpResults.daysonly);
+        } catch (IOException e) {
+            Platform.runLater(() -> err(countryHolidays, e.toString()));
+        } catch (InterruptedException e) {
+            Platform.runLater(() -> err(countryHolidays, e.toString()));
+        }
     }
 
-
+    /**
+     *Used to setup  the GSON of for Nager.date
+     */
     public class HoliDate {
         String date;
         String localName;
         String name;
     } // HoliDate
 
+    /**
+     *Used to set up the GSON for DigiDate.
+     */
     public class DigiDate {
         int daysonly;
-
-
-            int years;
-            int months;
-            int days;
-
+        int years;
+        int months;
+        int days;
     } // DigiDate
 
 } // ApiApp
